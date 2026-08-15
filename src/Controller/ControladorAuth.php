@@ -36,6 +36,10 @@ class ControladorAuth extends ControladorGeral{
         
         if(!(Validator::validaRegistro($dados))) exit($this->responseError("campos inválidos", 400));
 
+        $dao = new UsuarioAcessoDAO;
+
+        if($dao->findByIdFuncionario($dados['id_funcionario'])) exit($this->responseError("funcionário já está cadastrado com acesso", 409));
+
         $usuarioAcesso = new UsuarioAcesso(
             $dados['email'],
             password_hash($dados['senha'], PASSWORD_DEFAULT),
@@ -43,7 +47,7 @@ class ControladorAuth extends ControladorGeral{
             $dados['id_papel']
         );
 
-        $dao = new UsuarioAcessoDAO;
+        
         $dao->insert($usuarioAcesso);
         echo $this->responseJSON(["mensagem" => "usuário cadastrado com sucesso"]);
     }

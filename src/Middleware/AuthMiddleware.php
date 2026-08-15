@@ -8,9 +8,9 @@ class AuthMiddleware{
     public static function executar()
     {
         if(empty($_SESSION['id_usuario']) || empty($_SESSION['id_funcionario']) || empty($_SESSION['id_papel'])){
-            http_response_code(401);
+            http_response_code(404);
             exit(json_encode([
-                "mensagem" => "usuário não autorizado"
+                "mensagem" => "rota não encontrada"
             ]));
         }
     }

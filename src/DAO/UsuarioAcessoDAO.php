@@ -53,6 +53,22 @@ class UsuarioAcessoDAO extends BaseDAO
         ))->setId((int) $dados['id_usuario_acesso']);
     }
 
+    public function findByIdFuncionario($id): ?UsuarioAcesso
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM usuario_acesso WHERE id_funcionario = :id_funcionario');
+        $stmt->execute([':id_funcionario' => $id]);
+        $dados = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$dados) return null;
+
+        return (new UsuarioAcesso(
+            $dados['email'],
+            $dados['senha'],
+            (int) $dados['id_funcionario'],
+            (int) $dados['id_papel']
+        ))->setId((int) $dados['id_usuario_acesso']);
+    }
+
     private function getDados(UsuarioAcesso $usuario): array
     {
         return [
