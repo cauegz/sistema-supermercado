@@ -1,32 +1,74 @@
 services:
+
+  # =========================
+  # BACKEND PHP
+  # =========================
   web:
-    build: .
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
     ports:
       - "8080:80"
+
     volumes:
-      - ./:/var/www/html
+      - ./backend:/var/www/html
       - composer_vendor:/var/www/html/vendor
+
     environment:
       POSTGRES_DBNAME: ${POSTGRES_DBNAME}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASS: ${POSTGRES_PASS}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
+
     depends_on:
       db:
         condition: service_healthy
 
+
+  # =========================
+  # FRONTEND REACT
+  # =========================
+  frontend:
+
+    image: node:22-alpine
+
+    working_dir: /app
+
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+    depends_on:
+      - web
+
+
+  # =========================
+  # DATABASE
+  # =========================
   db:
+
     image: postgres:17
+
     environment:
       POSTGRES_DB: ${POSTGRES_DBNAME}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASS}
+
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./database:/docker-entrypoint-initdb.d
+      - ./backend/database:/docker-entrypoint-initdb.d
+
     healthcheck:
       test:
         [
@@ -37,6 +79,11 @@ services:
       timeout: 5s
       retries: 10
 
+
 volumes:
+
   postgres_data:
+
   composer_vendor:
+
+  frontend_node_modules:
