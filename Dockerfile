@@ -28,7 +28,7 @@ RUN sed -ri \
 
 WORKDIR /var/www/html
 
-COPY composer.json composer.lock ./
+COPY ./backend/composer.json ./backend/composer.lock ./
 
 RUN composer install \
     --no-interaction \
@@ -36,7 +36,7 @@ RUN composer install \
     --prefer-dist \
     --no-autoloader
 
-COPY . .
+COPY backend/ .
 
 RUN composer dump-autoload --optimize \
     && chown -R www-data:www-data /var/www/html
