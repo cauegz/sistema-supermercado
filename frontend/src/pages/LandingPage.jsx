@@ -1,7 +1,9 @@
+import { Button } from "@/components/ui/button";
+
 function LandingPage() {
     return ( 
-        <div className="bg-blue-500">
-            oi
+        <div>
+            <Button variant="link">testando o shadcdn</Button>
         </div>
     );
 }
